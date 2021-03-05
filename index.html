@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Read Text File</title>
+</head>
+
+<body>
+    <input type="file" name="inputfile" id="inputfile">
+    <br>
+    <button onclick="upload()" id="button">upload</button>
+    <pre id="output"></pre>
+
+    <script type="text/javascript">
+        let bufferFile;
+        document.getElementById('inputfile')
+            .addEventListener('change', function () {
+
+                var fr = new FileReader();
+                fr.readAsArrayBuffer(this.files[0]);
+                fr.onload = function () {
+                    bufferFile = fr.result;
+                    console.log(fr.result);
+                }
+            })
+
+        function upload() {
+            var file = bufferFile;
+            var myHeaders = new Headers();
+            var requestOptions = {
+                method: 'PUT',
+                body: file,
+                headers: {
+                    "Content-Type": "application/octet-stream",
+                    "Content-Length": bufferFile.length
+                }
+            };
+
+            fetch("https://demo-presigned-url-2020.s3.amazonaws.com/dummy.xlsx?AWSAccessKeyId=XXXXXX&Content-Type=application%2Foctet-stream&Expires=1614924872&Signature=XXXXXX", requestOptions)
+                .then(response => {
+                    console.log(response);
+                    alert(JSON.stringify(response));
+                })
+                .catch(error => {
+                    console.log('error', error)
+                });
+        }
+    </script>
+</body>
+
+</html>
